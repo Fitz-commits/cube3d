@@ -29,4 +29,6 @@ typedef	struct		s_spec
     char **map;
 }					t_spec;
 
+int     free_spec( t_spec *specs);
+
 # endif

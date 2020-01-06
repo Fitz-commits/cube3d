@@ -12,11 +12,24 @@
 
 #include "cube3d.h"
 
+
+t_spec      *zero_spec(t_spec *specs)
+{
+    if (!(specs = (t_spec*)malloc(sizeof(t_spec))))
+        return (NULL);
+	specs->pathNO = NULL;
+	specs->pathSO = NULL;
+    specs->pathEA = NULL;
+    specs->pathWE = NULL;
+    specs->pathS = NULL;
+    specs->map = NULL;
+}
 t_spec      *specHandling(t_spec *specs, char *line)
 {
     if (!line)
         return (NULL);
-    if ()
+    if (line[0] == '1')
+        return
     if (line[0] == 'N' && line[1] == 'O')
 }
 t_spec      *initSpec(char *pathToCub)
@@ -29,7 +42,7 @@ t_spec      *initSpec(char *pathToCub)
     if (!(specs = (t_spec*)malloc(sizeof(t_spec))))
         return (NULL);
     if(!(fd = (open(pathconf, O_RDONLY))))
-        return (NULL);
+        return (free_spec(specs));
     while((ret = get_next_line(fd, &line) == 1))
     {
         specs = specHandling(specs, line);
