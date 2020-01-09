@@ -57,6 +57,7 @@ void				*ft_memccpy(void *str1, const void *str2, int c, size_t n);
 char				*ft_strncat(char *dest, const char *src, size_t nb);
 char				*ft_strcat(char *dest, const char *src);
 int					ft_strcmp(const char *s1, const char *s2);
+int					get_size(long long nbr, int base);
 
 typedef	struct		s_list
 {

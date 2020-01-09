@@ -1,12 +1,18 @@
 #include "cube3d.h"
 
-int     free_spec( t_spec *specs)
+t_spec		*free_spec(t_spec *specs)
 {
     free(specs);
-    return (0);
+    return (NULL);
 }
 
-int		free_map(char **map)
+t_spec		*free_line(char *line)
+{
+    free(line);
+    return (NULL);
+}
+
+t_spec		*free_map(char **map)
 {
 	int i;
 
@@ -18,11 +24,11 @@ int		free_map(char **map)
 		i++;
 	}
 	free(map);
-	return (0);
+	return (NULL);
 
 }
 
-int     free_all_spec(t_spec *specs)
+t_spec		*free_all_spec(t_spec *specs)
 {
     if (specs->pathNO)
         free(specs->pathNO);
@@ -36,5 +42,11 @@ int     free_all_spec(t_spec *specs)
         free(specs->pathS);
     if (specs->map)
 		free_map(specs->map);
-	return(free_spec(specs));
+	return (free_spec(specs));
+}
+
+t_spec		*free_sp_spl(t_spec *specs, char **spl_l)
+{
+	free_map(spl_l);
+	return (free_all_spec(specs));
 }
