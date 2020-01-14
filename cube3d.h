@@ -15,12 +15,25 @@
 # include "./get_next_line/get_next_line.h"
 # include "mlx.h"
 
+# define K_W 13
+# define K_S 1
+# define K_A 0
+# define K_D 2
+# define K_LEFT 123
+# define K_RIGHT 124
+# define moveSpeed 1
+# define rotSpeed 1
+
 typedef	struct		s_spec
 {
+    double posX;
+    double posY;
+    double dirX;
+    double dirY;
+    double planeX;
+    double planeY;
     int resX;
     int resY;
-    int posX;
-    int posY;
     char orien;
 	char *pathNO;
 	char *pathSO;
@@ -31,7 +44,7 @@ typedef	struct		s_spec
     char *pathS;
     char **map;
 }					t_spec;
-
+//lis la map et store dans une structure
 t_spec		*free_spec(t_spec *specs);
 int			ft_ar_to_int(char *color);
 char		*ft_strnaddmod(char *rest, char *s2);
@@ -44,6 +57,13 @@ t_spec		*free_line(char *line);
 t_spec		*free_map(char **map);
 t_spec		*free_all_spec(t_spec *specs);
 t_spec		*free_sp_spl(t_spec *specs, char **spl_l);
+// check si mur == 1
 int         valid_map(char **map);
+//set dirX dirY planeX planeY en fonction de la map
+t_spec		*set_oxy(t_spec *inf, char o, int y, int x);
+t_spec		*get_letter(t_spec *inf);
+t_spec		*set_dir(t_spec *inf, double dirX, double dirY);
+t_spec		*set_plane(t_spec *inf, double planeX, double planeY);
+t_spec		*set_player(t_spec *inf);
 
 # endif

@@ -1,39 +1,5 @@
 #include "cube3d.h"
 
-t_spec		*set_pos(t_spec *specs, int x, int y, char dir)
-{
-	specs->posX = x;
-	specs->posX = y;
-	specs->orien = dir;
-	return (specs);
-}
-
-t_spec		*prep_pos(t_spec *specs)
-{
-	int i;
-	int j;
-
-	i = 0;
-	while (specs->map[i])
-	{
-		j = 0;
-		while (specs->map[i][j])
-		{
-			if (specs->map[i][j] == 'N')
-				return (set_pos(specs, j, i, 'N'));
-			if (specs->map[i][j] == 'S')
-				return (set_pos(specs, j, i, 'S'));
-			if (specs->map[i][j] == 'E')
-				return (set_pos(specs, j, i, 'E'));
-			if (specs->map[i][j] == 'W')
-				return (set_pos(specs, j, i, 'W'));
-			j++;
-		}
-		i++;
-	}
-	return (free_all_spec(specs));
-}
-
 int		valid_map(char **map)
 {
 	int i;
@@ -57,4 +23,78 @@ int		valid_map(char **map)
 		if (map[i++][0] != '1')
 			return (-1);
 	return (1);
+}
+
+t_spec		*set_oxy(t_spec *inf, char o, int y, int x)
+{
+	inf->posX = x + 0.5;
+	inf->posY = y + 0.5;
+	inf->orien = o;
+	return (inf);
+}
+t_spec		*get_letter(t_spec *inf)
+{
+	int i;
+	int j;
+
+	j = 0;
+	i = 0;
+	while (inf->map[j])
+	{
+		i = 0;
+		while (inf->map[j][i])
+		{
+		if (inf->map[j][i] == 'N')
+			return (set_oxy(inf, 'N', j, i));
+		if (inf->map[j][i] == 'S')
+			return (set_oxy(inf, 'S', j, i));
+		if (inf->map[j][i] == 'W')
+			return (set_oxy(inf, 'W', j, i));
+		if (inf->map[j][i] == 'E')
+			return (set_oxy(inf, 'E', j, i));
+		i++;
+		}
+		j++;
+	}
+	return (NULL);
+}
+t_spec		*set_dir(t_spec *inf, double dirX, double dirY)
+{
+	inf->dirX = dirX;
+	inf->dirY = dirY;
+	return (inf);
+}
+t_spec		*set_plane(t_spec *inf, double planeX, double planeY)
+{
+	inf->planeX = planeX;
+	inf->planeY = planeY;
+	return (inf);
+}
+
+t_spec		*set_player(t_spec *inf)
+{
+	inf = get_letter(inf);
+	if (inf->orien == 'N')
+	{
+		inf = set_dir(inf, 0, 1);
+		inf = set_plane(inf, 0.66, 0);
+	}
+	if (inf->orien == 'S')
+	{
+		inf = set_dir(inf, 0, -1);
+		inf = set_plane(inf, 0.66, 0);
+	}
+	if (inf->orien == 'E')
+	{
+		inf = set_dir(inf, 1, 0);
+		inf = set_plane(inf, 0, 0.66);
+	}
+	if (inf->orien == 'W')
+	{
+		inf = set_dir(inf, -1, 0);
+		inf = set_plane(inf, 0, 0.66);
+	}
+	if (valid_map(inf->map) == -1)
+		return (free_all_spec(inf));
+	return (inf);
 }

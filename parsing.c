@@ -54,6 +54,7 @@ char		**delete_space(char **map)
 			while (map[i][j++])
 				if (map[i][j-1] != ' ')
 					*tempcp++ = map[i][j-1]; //might want null termination
+            *tempcp = '\0';
 			free(map[i]);
 			map[i++] = temp;	
 	}
@@ -176,7 +177,7 @@ t_spec      *initSpec(char *pathToCub)
         return (free_line(line)); //need to free the whole struc in case of error
 	if (!(specs->map = delete_space(specs->map)))
 		return (free_all_spec(specs));
-    return (specs);
+    return (set_player(specs));
 }
 /*
 int     main()

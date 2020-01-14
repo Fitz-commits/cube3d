@@ -42,9 +42,16 @@ int		verLine( void *mlx, void *win_ptr, int draw_start, int draw_end, int x)
 	}
 	return (1);
 }
-int		key_hook(int keycode,void *param)
+int		key_hook(int key,void *param)
 {
-	printf("%d", keycode);
+	t_spec *inf;
+
+	inf = (t_spec*)param;
+	if (key == K_W)
+	{
+		
+	}
+	printf("%d\n", key);
 	return (0);
 }
 int		main()
@@ -56,9 +63,7 @@ int		main()
 	inf = initSpec("./map.cub");
 	mlx = mlx_init();
 	win_ptr = mlx_new_window (mlx, inf->resX, inf->resY, "Projet du turfu" );
-	inf = initSpec("./map.cub");
 
-	double posX = 6.5, posY = 3.5; // x and y position
 	double dirX = 0, dirY = 1; // Vecteur direction
 	double planeX = 0.66, planeY = 0; // Vecteur plane --> || 9/11
 
@@ -67,12 +72,12 @@ int		main()
 		{
 			//calculate ray position and direction
 			double cameraX = 2 * x / (double)(inf->resX) - 1 ; //x-coordinate in camera space
-			double rayDirX = dirX + planeX * cameraX;
-			double rayDirY = dirY + planeY * cameraX;
+			double rayDirX = inf->dirX + inf->planeX * cameraX;
+			double rayDirY = inf->dirY + inf->planeY * cameraX;
 
 			//which box of the map we're in
-			int mapX = (int)(posX);
-			int mapY = (int)(posY);
+			int mapX = (int)(inf->posX);
+			int mapY = (int)(inf->posY);
 
 			//length of ray from current position to next x or y-side
 			double sideDistX;
@@ -94,22 +99,22 @@ int		main()
 			if (rayDirX < 0)
 			{
 				stepX = -1;
-				sideDistX = (posX - mapX) * deltaDistX;
+				sideDistX = (inf->posX - mapX) * deltaDistX;
 			}
 			else
 			{
 				stepX = 1;
-				sideDistX = (mapX + 1.0 - posX) * deltaDistX;
+				sideDistX = (mapX + 1.0 - inf->posX) * deltaDistX;
 			}
 			if (rayDirY < 0)
 			{
 				stepY = -1;
-				sideDistY = (posY - mapY) * deltaDistY;
+				sideDistY = (inf->posY - mapY) * deltaDistY;
 			}
 			else
 			{
 				stepY = 1;
-				sideDistY = (mapY + 1.0 - posY) * deltaDistY;
+				sideDistY = (mapY + 1.0 - inf->posY) * deltaDistY;
 			}
 			//perform DDA
 			while (hit == 0)
@@ -130,14 +135,14 @@ int		main()
 				//Check if ray has hit a wall
 				if (inf->map[mapY][mapX] == '1') 
 				{
-					printf("map x = %d\nmap y = %d\nstepY = %d\nperpWallDist=%f", mapX, mapY, stepY, (mapY - posY + (1 - stepY) / 2) / rayDirY);
+					printf("map x = %d\nmap y = %d\nstepY = %d\nperpWallDist=%f", mapX, mapY, stepY, (mapY - inf->posY + (1 - stepY) / 2) / rayDirY);
 					hit = 1;
 				}
 			}
 
 			//Calculate distance projected on camera direction (Euclidean distance will give fisheye effect!)
-			if(side == 0) perpWallDist = (mapX - posX + (1 - stepX) / 2) / rayDirX;
-			else          perpWallDist = (mapY - posY + (1 - stepY) / 2) / rayDirY;
+			if(side == 0) perpWallDist = (mapX - inf->posX + (1 - stepX) / 2) / rayDirX;
+			else          perpWallDist = (mapY - inf->posY + (1 - stepY) / 2) / rayDirY;
 			//Calculate height of line to draw on screen
 			int lineHeight = (int)(inf->resY / perpWallDist);
 
@@ -150,7 +155,7 @@ int		main()
 			printf("drawstart = %d\ndrawEnd = %d\nx = %d \n", drawStart, drawEnd, x);
 			verLine(mlx, win_ptr, drawStart, drawEnd, x);
 		}
-		mlx_key_hook ( win_ptr, (key_hook)(keycode, param), param);
+		mlx_key_hook ( win_ptr, key_hook, (void*)inf);
 		mlx_loop(mlx);
 	}
 
