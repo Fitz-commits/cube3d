@@ -22,10 +22,12 @@
 # define K_LEFT 123
 # define K_RIGHT 124
 # define moveSpeed 1
-# define rotSpeed 1
+# define rotSpeed 0.5
 
 typedef	struct		s_spec
 {
+    void *mlx;
+    void *win_ptr;
     double posX;
     double posY;
     double dirX;
@@ -65,5 +67,6 @@ t_spec		*get_letter(t_spec *inf);
 t_spec		*set_dir(t_spec *inf, double dirX, double dirY);
 t_spec		*set_plane(t_spec *inf, double planeX, double planeY);
 t_spec		*set_player(t_spec *inf);
+int         verLine(t_spec *inf, int draw_start, int draw_end, int x);
 
 # endif
