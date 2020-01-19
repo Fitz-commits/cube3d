@@ -76,12 +76,12 @@ t_spec		*set_player(t_spec *inf)
 	inf = get_letter(inf);
 	if (inf->orien == 'N')
 	{
-		inf = set_dir(inf, 0, 1);
+		inf = set_dir(inf, 0, -1);
 		inf = set_plane(inf, 0.66, 0);
 	}
 	if (inf->orien == 'S')
 	{
-		inf = set_dir(inf, 0, -1);
+		inf = set_dir(inf, 0, 1);
 		inf = set_plane(inf, 0.66, 0);
 	}
 	if (inf->orien == 'E')

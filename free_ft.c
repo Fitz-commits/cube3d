@@ -12,6 +12,12 @@ t_spec		*free_line(char *line)
     return (NULL);
 }
 
+char		*free_line_char(char *line)
+{
+    free(line);
+    return (NULL);
+}
+
 t_spec		*free_map(char **map)
 {
 	int i;

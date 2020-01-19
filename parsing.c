@@ -12,23 +12,23 @@
 
 #include "cube3d.h"
 #include <stdio.h>
+
 char            *addbackn(char *line)
 {
     char *buffer;
     char *cpy;
     char *cpy_buf;
 
-    if (!(buffer = (char*)(malloc(ft_strlen(line + 2)))))
-        return (NULL);
+    if (!(buffer = (char*)(malloc(ft_strlen(line) + 2))))
+        return (free_line_char(line));
     cpy_buf = buffer;
     cpy = line;
     while (*line)
         *buffer++ = *line++;
     *buffer++ = '\n';
-    *buffer++ = '\0';
+    *buffer = '\0';
     free(cpy);
     return (cpy_buf);
-
 }
 
 char		**delete_space(char **map)
@@ -47,7 +47,7 @@ char		**delete_space(char **map)
 		while(map[i][j])
 			if(map[i][j++] == ' ')
 				space += 1;
-		if (!(temp = (char*)malloc(sizeof(ft_strlen(map[i] - space + 1)))))
+		if (!(temp = (char*)malloc(ft_strlen(map[i]) - space + 1)))
 				return (NULL);
 			tempcp = temp;
 			j = 0;
@@ -131,6 +131,7 @@ t_spec		*map_builder(t_spec *specs, char *line, int fd)
     free_line(buffer);
     return(specs);
 }
+
 t_spec      *specHandling(t_spec *specs, char *line)
 {
     char **spl_l;
@@ -156,6 +157,7 @@ t_spec      *specHandling(t_spec *specs, char *line)
             return (free_sp_spl(specs, spl_l));
     return (spec_hand_bis(specs, spl_l));
 }
+
 t_spec      *initSpec(char *pathToCub)
 {
     int fd;

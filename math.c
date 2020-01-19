@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include "cube3d.h"
-
+#include <stdio.h>
 int         ft_ar_to_int(char *color)
 {
     int r;
@@ -25,3 +25,8 @@ int         ft_ar_to_int(char *color)
     colorhex = r * 256 * 256 + g * 256 + b;
     return (colorhex);
 }
+
+/*int main()
+{
+    printf("%d", ft_ar_to_int("255,0,154"));
+}*/
