@@ -16,40 +16,23 @@
 #include "cube3d.h"
 #include <time.h>
 
-/*int		main()
-  {
-  void *mlx;
-  void *win_ptr;
-  int i;
-  int j = 200;
-  i = 200;
-  mlx = mlx_init();
-  win_ptr = mlx_new_window (mlx, 1920, 1080, "hello" );
-  while (j < 500)
-  {
-  i = 200;
-  while(i < 600)
-  mlx_pixel_put (mlx, win_ptr, i++, j, 16777215);
-  j++;
-  }
-  mlx_loop(mlx);
-  return (0);
-  }*/
-char		*DrawInside(t_spec *inf, int *intimgptr, int drawStart, int drawEnd, int color, int x)
+
+void		drawInside(t_spec *inf, int drawStart, int drawEnd, int texNum)
 {
 	int y;
-
 	y = 0;
-	while (y < drawStart)
-		intimgptr[(y++ * inf->resX) + x] = 1689725;
-	while (drawStart < drawEnd)
-	{
-		intimgptr[(drawStart * inf->resX) + x] = color;
-		drawStart++;
-	}
-	while (drawEnd < inf->resY)
-		intimgptr[(drawEnd++ * inf->resX) + x] = 16777085;
-	return ((char*)intimgptr);
+	while(y <= drawStart)
+			inf->intimgptr[(y++ * inf->resX) + inf->x] = inf->colorC;
+		while (y < drawEnd)
+		{
+			// Cast the texture coordinate to integer, and mask with (texHeight - 1) in case of overflow
+			int texY = (int)inf->texPos & (inf->text->theight[texNum] - 1);
+			inf->texPos += inf->step;
+			int color = inf->text->itext[texNum][inf->text->theight[texNum] * texY + inf->texX];
+			inf->intimgptr[(y++ * inf->resX) + inf->x] = color;
+		}
+		while (y < inf->resY)
+			inf->intimgptr[(y++ * inf->resX) + inf->x] = inf->colorF;
 }
 char *clearImage(t_spec *inf)
 {
@@ -63,13 +46,13 @@ char *clearImage(t_spec *inf)
 }
 int 	draw(t_spec *inf)
 {
-
+	inf->x = 0;
+	while (inf->x < inf->resX)
 	//inf->imgptr = mlx_new_image(inf->mlx, inf->resX, inf->resY);
 	//inf->charimgptr = mlx_get_data_addr(inf->imgptr, &l, &l, &l);
-	for(int x = 0; x < inf->resX; x++)
 	{
 		//calculate ray position and direction
-		double cameraX = 2 * x / (double)(inf->resX) - 1 ; //x-coordinate in camera space
+		double cameraX = 2 * inf->x / (double)(inf->resX) - 1 ; //x-coordinate in camera space
 		double rayDirX = inf->dirX + inf->planeX * cameraX;
 		double rayDirY = inf->dirY + inf->planeY * cameraX;
 
@@ -143,61 +126,33 @@ int 	draw(t_spec *inf)
 		int l;
 		l = 0;
 		//calculate lowest and highest pixel to fill in current stripe
-		int drawStart = -lineHeight / 2 + inf->resY / 2;
+		int drawStart =  -lineHeight / 2 + inf->resY / 2;
 		if(drawStart < 0)drawStart = 0;
-		int drawEnd = lineHeight / 2 + inf->resY / 2;
+		int drawEnd =  lineHeight / 2 + inf->resY / 2;
 		if(drawEnd >= inf->resY)drawEnd = inf->resY - 1;
-
-
 		// TEXTURES
-
-
 		double wallX; //where exactly the wall was hit
 		if (side == 0) wallX = inf->posY + perpWallDist * rayDirY;
 		else           wallX = inf->posX + perpWallDist * rayDirX;
 		wallX -= floor((wallX));
 		//x coordinate on the texture
-		int texX = (int)(wallX * (double)(inf->twidth));
-		if(side == 0 && rayDirX > 0) texX = inf->twidth - texX - 1;
-		if(side == 1 && rayDirY < 0) texX = inf->twidth - texX - 1;
-
+		inf->texX = (int)(wallX * (double)(inf->text->twidth[0]));
+		if(side == 0 && rayDirX > 0) inf->texX = inf->text->twidth[0] - inf->texX - 1;
+		if(side == 1 && rayDirY < 0) inf->texX = inf->text->twidth[0] - inf->texX - 1;
 		// How much to increase the texture coordinate per screen pixel
-		double step = 1.0 * inf->theight / lineHeight;
+		inf->step = 1.0 * inf->text->theight[0] / lineHeight;
 		// Starting texture coordinate
-		double texPos = (drawStart - inf->resY / 2 + lineHeight / 2) * step;
-		int y;
-		y = 0;
-		while(y < drawStart)
-			inf->intimgptr[(y++ * inf->resX) + x] = 1689725;
-		for(y = drawStart; y<drawEnd; y++)
-		{
-			// Cast the texture coordinate to integer, and mask with (texHeight - 1) in case of overflow
-			int texY = (int)texPos & (inf->theight - 1);
-			texPos += step;
-			int color = inf->ptrtext[inf->theight * texY + texX];
-			inf->intimgptr[(y * inf->resX) + x] = color;
-		}
-		while (y < inf->resY)
-			inf->intimgptr[(y++ * inf->resX) + x] = 1689725;
-
-
-
-
-
-
-
-		//if (side == 0 && rayDirX > 0) inf->charimgptr = DrawInside(inf, (int*)inf->charimgptr, drawStart, drawEnd, 16777215, x); //blanc
-		//if (side == 0 && rayDirX < 0) inf->charimgptr = DrawInside(inf, (int*)inf->charimgptr, drawStart, drawEnd, 16768000, x); //jaune
-		//if (side == 1 && rayDirY < 0) inf->charimgptr = DrawInside(inf, (int*)inf->charimgptr, drawStart, drawEnd, 255, x); //bleu
-		//if (side == 1 && rayDirY > 0) inf->charimgptr = DrawInside(inf, (int*)inf->charimgptr, drawStart, drawEnd, 16711680, x); //rouge
-
-		/*if (side == 0 && rayDirX < 0) verLine(inf, drawStart, drawEnd, x, 16768000); //vert
-		  if (side == 1 && rayDirY < 0) verLine(inf, drawStart, drawEnd, x, 255); // blue
-		  if (side == 1 && rayDirY > 0) verLine(inf, drawStart, drawEnd, x, 16711680); // rouge*/
-		//printf("drawStart = %d\ndrawStart = %d\n", drawStart, drawEnd);
-
-
+		inf->texPos = (drawStart - inf->resY / 2 + lineHeight / 2) * inf->step;
+		//need to implement draw inside
+		if (side == 0 && rayDirX > 0) drawInside(inf, drawStart, drawEnd, 0);
+		if (side == 0 && rayDirX < 0) drawInside(inf, drawStart, drawEnd, 1);
+		if (side == 1 && rayDirY < 0) drawInside(inf, drawStart, drawEnd, 2);
+		if (side == 1 && rayDirY > 0) drawInside(inf, drawStart, drawEnd, 3);
+	inf->z_buffer[inf->x] = perpWallDist;
+	inf->x++;
 	}
+
+
 	mlx_put_image_to_window (inf->mlx, inf->win_ptr, inf->imgptr, 0, 0);
 	//clearImage(inf);
 	return (1);
@@ -271,7 +226,16 @@ int		key_hook(int key,void *param)
 		mlx_destroy_window(inf->mlx, inf->win_ptr);
 		exit(0);
 	}
+	if (key == 17)
+	{
+		mlx_destroy_window(inf->mlx, inf->win_ptr);
+		exit(0);
+	}
 	return (0);
+}
+int		ft_close(t_spec inf)
+{
+	exit(0);
 }
 int		main()
 {
@@ -282,21 +246,18 @@ int		main()
 	l = 0;
 	i = 0;
 	inf = initSpec("./map.cub");
-	inf->time = 0;
-	inf->oldTime = 0;
+	inf->z_buffer = malloc(sizeof(double) * inf->resX);
 	inf->mlx = mlx_init();
 	inf->win_ptr = mlx_new_window (inf->mlx, inf->resX, inf->resY, "Projet du turfu" );
+	if (!(inf->text = init_void(inf)))
+        return (0);
 	inf->imgptr = mlx_new_image(inf->mlx, inf->resX, inf->resY);
 	inf->charimgptr = mlx_get_data_addr(inf->imgptr, &l, &l, &l);
 	inf->intimgptr = (int*)inf->charimgptr;
-	inf->vtext1  = mlx_xpm_file_to_image(inf->mlx, "./text/redbrick.xpm", &inf->twidth, &inf->theight);
-	inf->text1 = mlx_get_data_addr(inf->vtext1, &i, &i, &i);
-	inf->ptrtext = (int*)inf->text1;
 	draw(inf);
 	mlx_hook(inf->win_ptr, 2, (1L << 0), key_hook, inf);
 	mlx_hook(inf->win_ptr, 3, (1L << 1), key_hook, inf);
+	mlx_hook(inf->win_ptr, 17, 0, ft_close, inf);
 	//mlx_loop_hook(inf->mlx, draw, inf);
-	//mlx_key_hook(inf->win_ptr, key_hook, (void*)inf);
 	mlx_loop(inf->mlx);
-
 }

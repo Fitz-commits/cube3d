@@ -1,13 +1,14 @@
 R 1280 720
-NO ./path_north
 
-SO ./path_sou
+NO ./text/redbrick.xpm
 
-WE ./path_we
+SO ./text/greystone.xpm
 
-EA ./path_ea
+WE ./text/bluestone.xpm
 
-S ./path_spr
+EA ./text/eagle.xpm
+
+S ./text/pillar.xpm
 
 F 220,100,0
 

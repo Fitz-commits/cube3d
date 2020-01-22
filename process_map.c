@@ -98,3 +98,55 @@ t_spec		*set_player(t_spec *inf)
 		return (free_all_spec(inf));
 	return (inf);
 }
+int			get_sprite_number(char **map)
+{
+	int i;
+	int j;
+	int nb;
+
+
+	i = -1;
+	j = -1;
+	nb = 0;
+	while (map[++i])
+		while (map[i][++j])
+			if (map[i][j] == 'S')
+				nb++;
+	return (nb);
+}
+
+t_sprite	*zeroingSprite(t_sprite *sprites)
+{
+	sprites->spriteX = NULL;
+	sprites->spriteY = NULL;
+	return (sprites);
+}
+
+t_sprite	*catchSprite(t_spec *inf)
+{
+	int i;
+	int nb;
+	int j;
+	t_sprite *sprites;
+
+	i = 0;
+	j = 0;
+	nb = inf->sprite_nb;
+	inf->sprite_nb = get_sprite_number(inf->map);
+	if (!(sprites = (t_sprite*)malloc(sizeof(t_sprite))))
+		return (NULL);
+	sprites = zeroingSprite(sprites);
+	if (!(sprites->spriteX = (double*)malloc(sizeof(double) * inf->sprite_nb)))
+		return (NULL); // need to implement a free
+	if (!(sprites->spriteX = (double*)malloc(sizeof(double) * inf->sprite_nb)))
+		return (NULL); // need to implement a free
+	while (inf->map[++i])
+		while (inf->map[i][++j])
+			if (inf->map[i][j] == 'S')
+				{
+					nb -= 1;
+					sprites->spriteX[nb] = i + 0.5;
+					sprites->spriteY[nb] = j + 0.5; 
+				}
+	return (sprites);
+}

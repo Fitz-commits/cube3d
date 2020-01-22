@@ -23,12 +23,35 @@
 # define K_RIGHT 124
 # define K_ESC 53
 # define moveSpeed 0.1
-# define rotSpeed 3.141592653589793238462643383279502884197169399375105820974/64
+# define rotSpeed 3.141592653589793238462643383279502884197169399375105820974/32
+
+
+typedef		struct s_text
+{
+	void **vtext;
+	char **chartext;
+	int **itext;
+	int theight[5];
+	int twidth[5];
+	int tsl[5];
+	int bpp[5];
+	int med[5];
+}					t_text;
+
+typedef		struct s_sprite
+{
+    double *spriteX;
+    double *spriteY;
+}					t_sprite;
 
 typedef	struct		s_spec
 {
-    int time;
-    int oldTime;
+    int x;
+    double *z_buffer;
+    int sprite_nb;
+    double texPos;
+    double step;
+    int texX;
     void *imgptr;
     char *charimgptr;
     void *mlx;
@@ -50,13 +73,14 @@ typedef	struct		s_spec
     int colorC;
     char *pathS;
     char **map;
-    char *text1;
-    char *vtext1;
     int *intimgptr;
-    int  twidth;
-	int  theight;
-    int *ptrtext;
+	t_text *text;
 }					t_spec;
+
+// vtext représente l'image destroy it if need be
+// char_text = addresse de l'image pour modification
+// itext valeur utilisee dans les calculs
+
 //lis la map et store dans une structure
 t_spec		*free_spec(t_spec *specs);
 int			ft_ar_to_int(char *color);
@@ -81,4 +105,8 @@ t_spec		*set_plane(t_spec *inf, double planeX, double planeY);
 t_spec		*set_player(t_spec *inf);
 int         verLine(t_spec *inf, int draw_start, int draw_end, int x, int color);
 
+// texture 
+
+t_text	*init_void(t_spec *inf);
+t_text	*get_adress(t_text *text);
 # endif
