@@ -10,7 +10,7 @@ SRC = ft_atoi.c       ft_isdigit.c    ft_memmove.c    ft_split.c      ft_strlcpy
 		ft_isalpha.c    ft_memcmp.c     ft_putnbr_fd.c  ft_strjoin.c    ft_strncpy.c    ft_substr.c \
 		ft_isascii.c    ft_memcpy.c     ft_putstr_fd.c  ft_strlcat.c    ft_strndup.c    ft_tolower.c \
 		ft_toupper.c	ft_memccpy.c	ft_strcat.c 	ft_strncat.c	ft_strcmp.c		ft_calloc.c	\
-		ft_get_size.c
+		ft_get_size.c	ft_gnl.c	ft_stradd.c
 SRC_1 = ft_lstadd_back_bonus.c	ft_lstadd_front_bonus.c ft_lstclear_bonus.c ft_lstdelone_bonus.c \
 		ft_lstiter_bonus.c ft_lstlast_bonus.c ft_lstmap_bonus.c ft_lstnew_bonus.c ft_lstsize_bonus.c
 OBJ_1 = $(SRC_1:.c=.o)

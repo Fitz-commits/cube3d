@@ -31,9 +31,6 @@ t_text	*zeroing(t_text *text)
 }
 t_text	*init_void(t_spec *inf)
 {
-	int l;
-	int i;
-
 	if (!(inf->text = malloc(sizeof(t_text))))
 		return (NULL);
 	if(!(inf->text->vtext = (void**)malloc(sizeof(void*) * 5)))

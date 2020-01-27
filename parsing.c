@@ -106,8 +106,8 @@ t_spec      *spec_hand_bis(t_spec *specs, char **spl_l)
         specs->colorC = ft_ar_to_int(spl_l[1]);
     if (!(ft_strncmp(spl_l[0], "R", 1)))
     {
-        specs->resX = ft_atoi(spl_l[1]);
-        specs->resY = ft_atoi(spl_l[2]);
+        specs->res_x = ft_atoi(spl_l[1]);
+        specs->res_y = ft_atoi(spl_l[2]);
     }
     free_map(spl_l);
     return (specs);
@@ -179,6 +179,7 @@ t_spec      *initSpec(char *pathToCub)
         return (free_line(line)); //need to free the whole struc in case of error
 	if (!(specs->map = delete_space(specs->map)))
 		return (free_all_spec(specs));
+    specs->sprites = catchSprite(specs);
     return (set_player(specs));
 }
 /*

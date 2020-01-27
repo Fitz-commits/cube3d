@@ -13,8 +13,12 @@
 #ifndef LIBFT_H
 # define LIBFT_H
 
+# include <unistd.h>
+# include <fcntl.h>
 # include <string.h>
 # include <stdlib.h>
+# include <limits.h>
+# define BUFFER_SIZE 16
 
 int					ft_atoi(const char *str);
 void				ft_bzero(void *s, size_t n);
@@ -74,5 +78,7 @@ t_list				*ft_lstlast(t_list *lst);
 void				ft_lstadd_back(t_list **alst, t_list *new);
 void				ft_lstclear(t_list **lst, void (*del)(void*));
 t_list				*ft_lstmap(t_list *lst, void *(*f)(void*));
+int					get_next_line(int fd, char **line);
+char				*ft_stradd(char *rest, char *s2);
 
 #endif

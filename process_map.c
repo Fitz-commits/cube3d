@@ -4,7 +4,6 @@ int		valid_map(char **map)
 {
 	int i;
 	int j;
-	int sizey;
 	
 	j = 0;
 	while(map[0][j])
@@ -27,8 +26,8 @@ int		valid_map(char **map)
 
 t_spec		*set_oxy(t_spec *inf, char o, int y, int x)
 {
-	inf->posX = x + 0.5;
-	inf->posY = y + 0.5;
+	inf->pos_x = x + 0.5;
+	inf->pos_y = y + 0.5;
 	inf->orien = o;
 	return (inf);
 }
@@ -60,8 +59,8 @@ t_spec		*get_letter(t_spec *inf)
 }
 t_spec		*set_dir(t_spec *inf, double dirX, double dirY)
 {
-	inf->dirX = dirX;
-	inf->dirY = dirY;
+	inf->dir_x = dirX;
+	inf->dir_y= dirY;
 	return (inf);
 }
 t_spec		*set_plane(t_spec *inf, double planeX, double planeY)
@@ -104,14 +103,17 @@ int			get_sprite_number(char **map)
 	int j;
 	int nb;
 
-
+	i = 0;
 	i = -1;
 	j = -1;
 	nb = 0;
 	while (map[++i])
-		while (map[i][++j])
-			if (map[i][j] == 'S')
-				nb++;
+		{
+			j = -1;
+			while (map[i][++j])
+				if (map[i][j] == '2')
+					nb++;
+		}
 	return (nb);
 }
 
@@ -130,23 +132,76 @@ t_sprite	*catchSprite(t_spec *inf)
 	t_sprite *sprites;
 
 	i = 0;
-	j = 0;
-	nb = inf->sprite_nb;
 	inf->sprite_nb = get_sprite_number(inf->map);
+	nb = inf->sprite_nb;
 	if (!(sprites = (t_sprite*)malloc(sizeof(t_sprite))))
 		return (NULL);
 	sprites = zeroingSprite(sprites);
 	if (!(sprites->spriteX = (double*)malloc(sizeof(double) * inf->sprite_nb)))
 		return (NULL); // need to implement a free
-	if (!(sprites->spriteX = (double*)malloc(sizeof(double) * inf->sprite_nb)))
+	if (!(sprites->spriteY = (double*)malloc(sizeof(double) * inf->sprite_nb)))
 		return (NULL); // need to implement a free
 	while (inf->map[++i])
+	{
+		j = -1;
 		while (inf->map[i][++j])
-			if (inf->map[i][j] == 'S')
+			if (inf->map[i][j] == '2')
 				{
 					nb -= 1;
 					sprites->spriteX[nb] = i + 0.5;
 					sprites->spriteY[nb] = j + 0.5; 
 				}
+	}
 	return (sprites);
+}
+double		*cacl_dist(t_spec *inf)
+{
+	double		*dist;
+	int i;
+
+	i = -1;
+	if (!(dist = (double*)malloc(sizeof(double) * inf->sprite_nb)))
+		return (NULL);// free implementation
+	while (++i < inf->sprite_nb)
+		dist[i] = (inf->pos_x - inf->sprites->spriteX[i]) * (inf->pos_x - inf->sprites->spriteX[i])
+			+ (inf->pos_y - inf->sprites->spriteY[i]) * (inf->pos_y - inf->sprites->spriteY[i]);
+	return (dist);
+}
+
+void	swap_sprite(t_spec *inf, int i, int j)
+{
+	double temp_x;
+	double temp_y;
+
+	temp_x = inf->sprites->spriteX[i];
+	temp_y = inf->sprites->spriteY[i];
+	inf->sprites->spriteX[i] = inf->sprites->spriteX[j];
+	inf->sprites->spriteY[i] = inf->sprites->spriteY[j];
+	inf->sprites->spriteX[j] = temp_x;
+	inf->sprites->spriteY[j] = temp_y;
+}
+
+t_sprite	*buble_sort_sprite(t_spec *inf)
+{
+	int i;
+	int j;
+	double tempdist;
+	double *dist;
+
+	i = -1;
+	j = -1;
+	dist = cacl_dist(inf);
+	while (++i < inf->sprite_nb - 1)
+		while (++j < inf->sprite_nb - i - 1)
+			if (dist[j] < dist[j + 1])
+			{
+				swap_sprite(inf, j,j + 1);
+				tempdist = dist[j];
+				dist[j] = dist[j + 1];
+				dist[j + 1] = dist[j];
+			}
+	free(dist);
+	return (inf->sprites);
+
+
 }

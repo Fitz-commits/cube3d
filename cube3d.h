@@ -12,7 +12,7 @@
 
 #ifndef CUBE_3D_H
 # define CUBE_3D_H
-# include "./get_next_line/get_next_line.h"
+# include "./libft/libft.h"
 # include "mlx.h"
 
 # define K_W 13
@@ -22,7 +22,7 @@
 # define K_LEFT 123
 # define K_RIGHT 124
 # define K_ESC 53
-# define moveSpeed 0.1
+# define moveSpeed 0.20
 # define rotSpeed 3.141592653589793238462643383279502884197169399375105820974/32
 
 
@@ -46,24 +46,43 @@ typedef		struct s_sprite
 
 typedef	struct		s_spec
 {
+    void *mlx;
+    void *win_ptr;
     int x;
-    double *z_buffer;
-    int sprite_nb;
+    // dda
+    double camera_x;
+    double ray_dir_x;
+    double ray_dir_y;
+    int map_x;
+    int map_y;
+    int step_x;
+    int step_y;
+    double pos_x;
+    double pos_y;
+    double dir_x;
+    double dir_y;
+    double planeX;
+    double planeY;
+    double side_dist_x;
+    double side_dist_y;
+    double delta_dist_x;
+    double delta_dist_y;
+    double perp_wall_dist;
+    int step_x;
+    int step_y;
+    int side;
+    int line_height;
+    int draw_start;
+    int draw_end;
+    double wall_x;
+
     double texPos;
     double step;
     int texX;
     void *imgptr;
     char *charimgptr;
-    void *mlx;
-    void *win_ptr;
-    double posX;
-    double posY;
-    double dirX;
-    double dirY;
-    double planeX;
-    double planeY;
-    int resX;
-    int resY;
+    int res_x;
+    int res_y;
     char orien;
 	char *pathNO;
 	char *pathSO;
@@ -75,6 +94,9 @@ typedef	struct		s_spec
     char **map;
     int *intimgptr;
 	t_text *text;
+    //sprite handling;
+    int sprite_nb;
+    t_sprite *sprites;
 }					t_spec;
 
 // vtext représente l'image destroy it if need be
@@ -109,4 +131,9 @@ int         verLine(t_spec *inf, int draw_start, int draw_end, int x, int color)
 
 t_text	*init_void(t_spec *inf);
 t_text	*get_adress(t_text *text);
+
+// sprites
+
+t_sprite	*catchSprite(t_spec *inf);
+t_sprite	*buble_sort_sprite(t_spec *inf);
 # endif
