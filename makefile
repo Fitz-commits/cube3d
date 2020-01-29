@@ -10,7 +10,7 @@ LIB = ar rcs
 NAME = Cube3D
 
 SRC = math.c 	parsing.c	process_map.c	texHandling.c \
-		free_ft.c main.c
+		free_ft.c main.c	bmp.c
 
 OBJ = $(SRC:.c=.o)
 	INCLUDE = cube3d.h mlx.h

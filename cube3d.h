@@ -40,8 +40,8 @@ typedef		struct s_text
 
 typedef		struct s_sprite
 {
-    double *spriteX;
-    double *spriteY;
+    double *sprite_x;
+    double *sprite_y;
 }					t_sprite;
 
 typedef	struct		s_spec
@@ -55,14 +55,12 @@ typedef	struct		s_spec
     double ray_dir_y;
     int map_x;
     int map_y;
-    int step_x;
-    int step_y;
     double pos_x;
     double pos_y;
     double dir_x;
     double dir_y;
-    double planeX;
-    double planeY;
+    double plane_x;
+    double plane_y;
     double side_dist_x;
     double side_dist_y;
     double delta_dist_x;
@@ -96,6 +94,22 @@ typedef	struct		s_spec
 	t_text *text;
     //sprite handling;
     int sprite_nb;
+    double sprite_x;
+    double sprite_y;
+    double inv_det;
+    double trans_x;
+    double trans_y;
+    int sprite_screen_x;
+    int sprite_height;
+    int draw_start_y;
+    int draw_end_y;
+    int sprite_width;
+    int draw_start_x;
+    int draw_end_x;
+    int tex_y;
+    int tex_x;
+
+
     t_sprite *sprites;
 }					t_spec;
 
@@ -104,6 +118,7 @@ typedef	struct		s_spec
 // itext valeur utilisee dans les calculs
 
 //lis la map et store dans une structure
+int			save_bmp(t_spec *inf);
 t_spec		*free_spec(t_spec *specs);
 int			ft_ar_to_int(char *color);
 char		*ft_strnaddmod(char *rest, char *s2);

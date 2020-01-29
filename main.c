@@ -6,7 +6,7 @@
 /*   By: cdelaby <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/12 13:47:22 by cdelaby           #+#    #+#             */
-/*   Updated: 2020/01/23 17:16:23 by cdelaby          ###   ########.fr       */
+/*   Updated: 2020/01/28 19:36:17 by cdelaby          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ t_spec	*set_side_step(t_spec *inf)
 		inf->step_y = 1;
 		inf->side_dist_y = (inf->map_y + 1.0 -inf->pos_y) * inf->delta_dist_y;
 	}
+	return (inf);
 }
 t_spec		*perf_dda(t_spec *inf)
 {	
@@ -63,34 +64,35 @@ t_spec		*perf_dda(t_spec *inf)
 
 	hit = 0;
 	while (hit == 0)
+	{
+		//jump to next map square, OR in x-direction, OR in y-direction
+		if (inf->side_dist_x<  inf->side_dist_y)
 		{
-			//jump to next map square, OR in x-direction, OR in y-direction
-			if (inf->side_dist_x<  inf->side_dist_y)
-			{
-				inf->side_dist_x += inf->delta_dist_x;
-				inf->map_x += inf->step_x;
-				inf->side = 0;
-			}
-			else
-			{
-				inf->side_dist_y += inf->delta_dist_y;
-				inf->map_y += inf->step_y;
-				inf->side = 1;
-			}
-			//Check if ray has hit a wall
-			if (inf->map[inf->map_x][inf->map_y] == '1') 
-				hit = 1;
+			inf->side_dist_x += inf->delta_dist_x;
+			inf->map_x += inf->step_x;
+			inf->side = 0;
 		}
+		else
+		{
+			inf->side_dist_y += inf->delta_dist_y;
+			inf->map_y += inf->step_y;
+			inf->side = 1;
+		}
+		//Check if ray has hit a wall
+		if (inf->map[inf->map_y][inf->map_x] == '1') 
+			hit = 1;
+	}
+	return (inf);
 }
 
 t_spec		*set_draw(t_spec *inf)
 {
 	if (inf->side == 0)
 		inf->perp_wall_dist = (inf->map_x - inf->pos_x + (1 - inf->step_x) /
-			2) / inf->ray_dir_x;
+				2) / inf->ray_dir_x;
 	else
 		inf->perp_wall_dist = (inf->map_y - inf->pos_y + (1 - inf->step_y) /
-			2) / inf->ray_dir_y;
+				2) / inf->ray_dir_y;
 	inf->line_height = (int)(inf->res_y / inf->perp_wall_dist);
 	inf->draw_start = -inf->line_height / 2 + inf->res_y/2;
 	if (inf->draw_start < 0)
@@ -107,14 +109,22 @@ t_spec		*set_draw(t_spec *inf)
 }
 t_spec		*set_texture(t_spec *inf)
 {
-	
+	inf->texX = (int)(inf->wall_x * (double)(inf->text->twidth[0]));
+	if(inf->side == 0 && inf->ray_dir_x > 0)
+		inf->texX = inf->text->twidth[0] - inf->texX - 1;
+	if(inf->side == 1 && inf->ray_dir_y < 0)
+		inf->texX = inf->text->twidth[0] - inf->texX - 1;
+	inf->step = 1.0 * inf->text->theight[0] / inf->line_height;
+	inf->texPos = (inf->draw_start - inf->res_y / 2 +
+			inf->line_height / 2) * inf->step;
+	return (inf);
 }
 
-void	dda_setup(t_spec *inf, int x)
+void	dda_setup(t_spec *inf)
 {
 	inf->camera_x = 2 * inf->x / (double)(inf->res_x) - 1;
-	inf->ray_dir_x = inf->dir_x + inf->planeX * inf->camera_x;
-	inf->ray_dir_y = inf->dir_y + inf->planeY * inf->camera_x;
+	inf->ray_dir_x = inf->dir_x + inf->plane_x * inf->camera_x;
+	inf->ray_dir_y = inf->dir_y + inf->plane_y * inf->camera_x;
 	inf->map_x = (int)inf->pos_x;
 	inf->map_y = (int)inf->pos_y;
 	inf->delta_dist_x = fabs(1 / inf->ray_dir_x);
@@ -123,167 +133,78 @@ void	dda_setup(t_spec *inf, int x)
 	inf = perf_dda(inf);
 	inf = set_draw(inf);
 	inf = set_texture(inf);
-	
+}
+void sprite_math(t_spec *inf, int i)
+{
+	inf->sprite_x = inf->sprites->sprite_x[i] - inf->pos_x;
+	inf->sprite_y = inf->sprites->sprite_y[i] - inf->pos_y;
+	inf->inv_det = 1.0 / (inf->plane_x * inf->dir_y - inf->dir_x * inf->plane_y);
+	inf->trans_x = inf->inv_det * (inf->dir_y * inf->sprite_x -
+			inf->dir_x * inf->sprite_y);
+	inf->trans_y = inf->inv_det * (-inf->plane_y * inf->sprite_x +
+			inf->plane_x * inf->sprite_y);
+	inf->sprite_screen_x = (int)((inf->res_x / 2) * (1 + inf->trans_x / inf->trans_y));
+	inf->sprite_height = abs((int)(inf->res_y / (inf->trans_y)));
+	inf->draw_start_y = -inf->sprite_height / 2 + inf->res_y / 2;
+	if (inf->draw_start_y < 0)
+		inf->draw_start_y = 0;
+	inf->draw_end_y = inf->sprite_height / 2 + inf->res_y / 2;
+	if (inf->draw_end_y >= inf->res_y)
+		inf->draw_end_y = inf->res_y - 1;
+	inf->sprite_width = abs((int)(inf->res_y / (inf->trans_y)));
+	inf->draw_start_x = -inf->sprite_width / 2 + inf->sprite_screen_x;
+	if(inf->draw_start_x < 0)
+		inf->draw_start_x = 0;
+	inf->draw_end_x = inf->sprite_width / 2 + inf->sprite_screen_x;
+	if(inf->draw_end_x >= inf->res_x)
+		inf->draw_end_x = inf->res_x - 1;
+}
+
+void sprite_setup(t_spec *inf, int i)
+{
+	sprite_math(inf, i);
 }
 
 int 	draw(t_spec *inf)
 {
 	double z_buffer[inf->res_x];
-
+	int i;
 
 	inf->x = 0;
 	while (inf->x < inf->res_x)
-		//inf->imgptr = mlx_new_image(inf->mlx, inf->res_x, inf->res_y);
-		//inf->charimgptr = mlx_get_data_addr(inf->imgptr, &l, &l, &l);
 	{
-		//calculate ray position and direction
-		double cameraX = 2 * inf->x / (double)(inf->res_x) - 1 ; //x-coordinate in camera space
-		double rayDirX = inf->dir_x + inf->planeX * cameraX;
-		double rayDirY = inf->dir_y + inf->planeY * cameraX;
-
-		//which box of the map we're in
-		int mapX = (int)(inf->pos_x);
-		int mapY = (int)(inf->pos_y);
-
-		//length of ray from current position to next x or y-side
-		double sideDistX;
-		double sideDistY;
-
-		//length of ray from one x or y-side to next x or y-side
-		double deltaDistX = fabs(1 / rayDirX);
-		double deltaDistY = fabs(1 / rayDirY);
-		double perpWallDist;
-
-		//what direction to step in x or y-direction (either +1 or -1)
-		int stepX;
-		int stepY;
-
-		int hit = 0; //was there a wall hit?
-		int side; //was a NS or a EW wall hit?
-
-		//calculate step and initial sideDist
-		if (rayDirX < 0)
-		{
-			stepX = -1;
-			sideDistX = (inf->pos_x - mapX) * deltaDistX;
-		}
-		else
-		{
-			stepX = 1;
-			sideDistX = (mapX + 1.0 - inf->pos_x) * deltaDistX;
-		}
-		if (rayDirY < 0)
-		{
-			stepY = -1;
-			sideDistY = (inf->pos_y - mapY) * deltaDistY;
-		}
-		else
-		{
-			stepY = 1;
-			sideDistY = (mapY + 1.0 - inf->pos_y) * deltaDistY;
-		}
-		//perform DDA
-		while (hit == 0)
-		{
-			//jump to next map square, OR in x-direction, OR in y-direction
-			if (sideDistX < sideDistY)
-			{
-				sideDistX += deltaDistX;
-				mapX += stepX;
-				side = 0;
-			}
-			else
-			{
-				sideDistY += deltaDistY;
-				mapY += stepY;
-				side = 1;
-			}
-			//Check if ray has hit a wall
-			if (inf->map[mapY][mapX] == '1') 
-				hit = 1;
-		}
-
-		//Calculate distance projected on camera direction (Euclidean distance will give fisheye effect!)
-		if(side == 0) perpWallDist = (mapX - inf->pos_x + (1 - stepX) / 2) / rayDirX;
-		else          perpWallDist = (mapY - inf->pos_y + (1 - stepY) / 2) / rayDirY;
-		//Calculate height of line to draw on screen
-		int lineHeight = (int)(inf->res_y / perpWallDist);
-		//calculate lowest and highest pixel to fill in current stripe
-		int drawStart =  -lineHeight / 2 + inf->res_y / 2;
-		if(drawStart < 0)drawStart = 0;
-		int drawEnd =  lineHeight / 2 + inf->res_y / 2;
-		if(drawEnd >= inf->res_y)drawEnd = inf->res_y - 1;
-
-		// TEXTURES
-		double wallX; //where exactly the wall was hit
-		if (side == 0) wallX = inf->pos_y + perpWallDist * rayDirY;
-		else           wallX = inf->pos_x + perpWallDist * rayDirX;
-		wallX -= floor((wallX));
-		//x coordinate on the texture
-		inf->texX = (int)(wallX * (double)(inf->text->twidth[0]));
-		if(side == 0 && rayDirX > 0) inf->texX = inf->text->twidth[0] - inf->texX - 1;
-		if(side == 1 && rayDirY < 0) inf->texX = inf->text->twidth[0] - inf->texX - 1;
-		// How much to increase the texture coordinate per screen pixel
-		inf->step = 1.0 * inf->text->theight[0] / lineHeight;
-		// Starting texture coordinate
-		inf->texPos = (drawStart - inf->res_y / 2 + lineHeight / 2) * inf->step;
-		//need to implement draw inside
-		if (side == 0 && rayDirX > 0) drawInside(inf, drawStart, drawEnd, 0);
-		if (side == 0 && rayDirX < 0) drawInside(inf, drawStart, drawEnd, 1);
-		if (side == 1 && rayDirY < 0) drawInside(inf, drawStart, drawEnd, 2);
-		if (side == 1 && rayDirY > 0) drawInside(inf, drawStart, drawEnd, 3);
-		z_buffer[inf->x] = perpWallDist;
+		dda_setup(inf);
+		if (inf->side == 0 && inf->ray_dir_x > 0) drawInside(inf, inf->draw_start,inf->draw_end, 0);
+		if (inf->side == 0 && inf->ray_dir_x < 0) drawInside(inf, inf->draw_start,inf->draw_end, 1);
+		if (inf->side == 1 && inf->ray_dir_y < 0) drawInside(inf, inf->draw_start,inf->draw_end, 2);
+		if (inf->side == 1 && inf->ray_dir_y > 0) drawInside(inf, inf->draw_start,inf->draw_end, 3);
+		z_buffer[inf->x] = inf->perp_wall_dist;
 		inf->x++;
 	}
 	inf->sprites = buble_sort_sprite(inf);
-	for(int i = 0 ; i < inf->sprite_nb; i++)
+	i = 0;
+	while (i < inf->sprite_nb)
 	{
-		//translate sprite position to relative to camera
-		double spriteX = inf->sprites->spriteX[i] - inf->pos_x;
-		double spriteY = inf->sprites->spriteY[i] - inf->pos_y;
-
-		double invDet = 1.0 / (inf->planeX * inf->dir_y - inf->dir_x * inf->planeY); //required for correct matrix multiplication
-
-		double transformX = invDet * (inf->dir_y * spriteX - inf->dir_x * spriteY);
-		double transformY = invDet * (-inf->planeY * spriteX + inf->planeX * spriteY); //this is actually the depth inside the screen, that what Z is in 3D
-
-		int spriteScreenX = (int)((inf->res_x / 2) * (1 + transformX / transformY));
-		//calculate height of the sprite on screen
-		int spriteHeight = abs((int)(inf->res_y / (transformY))); //using 'transformY' instead of the real distance prevents fisheye
-		//calculate lowest and highest pixel to fill in current stripe
-		int drawStartY = -spriteHeight / 2 + inf->res_y / 2;
-		if(drawStartY < 0) drawStartY = 0;
-		int drawEndY = spriteHeight / 2 + inf->res_y / 2;
-		if(drawEndY >= inf->res_y) drawEndY = inf->res_y - 1;
-
-//calculate width of the sprite
-		int spriteWidth = abs( (int) (inf->res_y / (transformY)));
-		int drawStartX = -spriteWidth / 2 + spriteScreenX;
-		if(drawStartX < 0) drawStartX = 0;
-		int drawEndX = spriteWidth / 2 + spriteScreenX;
-		if(drawEndX >= inf->res_x) drawEndX = inf->res_x - 1;
-		for(int stripe = drawStartX; stripe < drawEndX; stripe++)
-      {
-        int texX = (int)(256 * (stripe - (-spriteWidth / 2 + spriteScreenX)) * inf->text->twidth[4] / spriteWidth) / 256;
-        //the conditions in the if are:
-        //1) it's in front of camera plane so you don't see things behind you
-        //2) it's on the screen (left)
-        //3) it's on the screen (right)
-        //4) ZBuffer, with perpendicular distance
-        if(transformY > 0 && stripe > 0 && stripe < inf->res_x && transformY < z_buffer[stripe])
-        for(int y = drawStartY; y < drawEndY; y++) //for every pixel of the current stripe
-        {
-          int d = (y) * 256 - inf->res_y * 128 + spriteHeight * 128; //256 and 128 factors to avoid floats
-          int texY = ((d * inf->text->theight[4]) / spriteHeight) / 256;
-          int color = inf->text->itext[4][inf->text->twidth[4] * texY + texX]; //get current color from the texture
-          if((color & 0x00FFFFFF) != 0) inf->intimgptr[(y * inf->res_x) + stripe] = color; //paint pixel if it isn't black, black is the invisible color
-        }
-      }
-    }
-
-	
-
-
+		sprite_math(inf, i);
+		for(int stripe = inf->draw_start_x; stripe < inf->draw_end_x; stripe++)
+		{
+			int texX = (int)(256 * (stripe - (-inf->sprite_width / 2 + inf->sprite_screen_x)) * inf->text->twidth[4] / inf->sprite_width) / 256;
+			//the conditions in the if are:
+			//1) it's in front of camera plane so you don't see things behind you
+			//2) it's on the screen (left)
+			//3) it's on the screen (right)
+			//4) ZBuffer, with perpendicular distance
+			if(inf->trans_y > 0 && stripe > 0 && stripe < inf->res_x && inf->trans_y < z_buffer[stripe])
+				for(int y = inf->draw_start_y; y < inf->draw_end_y; y++) //for every pixel of the current stripe
+				{
+					int d = (y) * 256 - inf->res_y * 128 + inf->sprite_height * 128; //256 and 128 factors to avoid floats
+					int texY = ((d * inf->text->theight[4]) / inf->sprite_height) / 256;
+					int color = inf->text->itext[4][inf->text->twidth[4] * texY + texX]; //get current color from the texture
+					if((color & 0x00FFFFFF) != 0) inf->intimgptr[(y * inf->res_x) + stripe] = color; //paint pixel if it isn't black, black is the invisible color
+				}
+		}
+		i++;
+	}
 	mlx_put_image_to_window (inf->mlx, inf->win_ptr, inf->imgptr, 0, 0);
 	//clearImage(inf);
 	return (1);
@@ -335,9 +256,9 @@ int		key_hook(int key,void *param)
 		double oldDirX = inf->dir_x;
 		inf->dir_x = inf->dir_x * cos(-rotSpeed) - inf->dir_y * sin(-rotSpeed);
 		inf->dir_y = oldDirX * sin(-rotSpeed) + inf->dir_y * cos(-rotSpeed); 
-		double oldPlaneX = inf->planeX;
-		inf->planeX = inf->planeX * cos(-rotSpeed) - inf->planeY * sin(-rotSpeed);
-		inf->planeY = oldPlaneX * sin(-rotSpeed) + inf->planeY * cos(-rotSpeed);
+		double oldPlaneX = inf->plane_x;
+		inf->plane_x = inf->plane_x * cos(-rotSpeed) - inf->plane_y * sin(-rotSpeed);
+		inf->plane_y = oldPlaneX * sin(-rotSpeed) + inf->plane_y * cos(-rotSpeed);
 		//draw(inf);
 	}
 	if (key == K_RIGHT)
@@ -347,9 +268,9 @@ int		key_hook(int key,void *param)
 		double oldDirX = inf->dir_x;
 		inf->dir_x = inf->dir_x * cos(rotSpeed) - inf->dir_y * sin(rotSpeed);
 		inf->dir_y = oldDirX * sin(rotSpeed) + inf->dir_y * cos(rotSpeed);
-		double oldPlaneX = inf->planeX;
-		inf->planeX = inf->planeX * cos(rotSpeed) - inf->planeY * sin(rotSpeed);
-		inf->planeY = oldPlaneX * sin(rotSpeed) + inf->planeY * cos(rotSpeed);
+		double oldPlaneX = inf->plane_x;
+		inf->plane_x = inf->plane_x * cos(rotSpeed) - inf->plane_y * sin(rotSpeed);
+		inf->plane_y = oldPlaneX * sin(rotSpeed) + inf->plane_y * cos(rotSpeed);
 		//draw(inf);
 	}
 	if (key == K_ESC)
@@ -374,6 +295,8 @@ int		main()
 	t_spec *inf;
 	int l;
 	int i;
+	int j;
+	int k;
 
 	l = 0;
 	i = 0;
@@ -383,9 +306,10 @@ int		main()
 	if (!(inf->text = init_void(inf)))
 		return (0);
 	inf->imgptr = mlx_new_image(inf->mlx, inf->res_x, inf->res_y);
-	inf->charimgptr = mlx_get_data_addr(inf->imgptr, &l, &l, &l);
+	inf->charimgptr = mlx_get_data_addr(inf->imgptr, &j, &k, &l);
 	inf->intimgptr = (int*)inf->charimgptr;
-	//draw(inf);
+	draw(inf);
+	save_bmp(inf);
 	mlx_hook(inf->win_ptr, 2, (1L << 0), key_hook, inf);
 	mlx_hook(inf->win_ptr, 3, (1L << 1), key_hook, inf);
 	mlx_hook(inf->win_ptr, 17, 0, ft_close, inf);
