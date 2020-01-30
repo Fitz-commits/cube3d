@@ -96,6 +96,13 @@ t_spec      *zero_spec(t_spec *specs)
     specs->pathWE = NULL;
     specs->pathS = NULL;
     specs->map = NULL;
+    specs->mlx = NULL;
+    specs->win_ptr = NULL;
+    specs->imgptr = NULL;
+    specs->charimgptr = NULL;
+    specs->intimgptr = NULL;
+    specs->text = NULL;
+    specs->sprites = NULL;
     return(specs);
 }
 t_spec      *spec_hand_bis(t_spec *specs, char **spl_l)
@@ -125,9 +132,9 @@ t_spec		*map_builder(t_spec *specs, char *line, int fd)
             return(free_line(line));
         free(line);
     }
-    free(line); // Might not work
+    free(line);
     if(!(specs->map = ft_split(buffer, '\n')))
-        return (free_spec(specs));
+        return (free_line(buffer));
     free_line(buffer);
     return(specs);
 }
@@ -140,19 +147,19 @@ t_spec      *specHandling(t_spec *specs, char *line)
         return (specs);
     if (!(spl_l = ft_split(line, ' ')))
         return (free_spec(specs));
-    if ((!(ft_strncmp(spl_l[0], "NO", 2))))
+    if (!specs->pathNO && (!(ft_strncmp(spl_l[0], "NO", 2))))
         if (!(specs->pathNO = ft_strdup(spl_l[1])))
             return (free_sp_spl(specs, spl_l));
-    if (!(ft_strncmp(spl_l[0], "SO", 2)))
+    if (!specs->pathSO && !(ft_strncmp(spl_l[0], "SO", 2)))
         if (!(specs->pathSO = ft_strdup(spl_l[1])))
             return (free_sp_spl(specs, spl_l));
-    if (!(ft_strncmp(spl_l[0], "WE", 2)))
+    if (!specs->pathWE && !(ft_strncmp(spl_l[0], "WE", 2)))
         if (!(specs->pathWE = ft_strdup(spl_l[1])))
             return (free_sp_spl(specs, spl_l));
-    if (!(ft_strncmp(spl_l[0], "EA", 2)))
+    if (!specs->pathEA && !(ft_strncmp(spl_l[0], "EA", 2)))
         if (!(specs->pathEA = ft_strdup(spl_l[1])))
             return (free_sp_spl(specs, spl_l));
-    if (!(ft_strncmp(spl_l[0], "S", 1)) && spl_l[0][1] == 0)
+    if (!specs->pathS && !(ft_strncmp(spl_l[0], "S", 1)) && spl_l[0][1] == 0)
         if (!(specs->pathS = ft_strdup(spl_l[1])))
             return (free_sp_spl(specs, spl_l));
     return (spec_hand_bis(specs, spl_l));
@@ -176,10 +183,11 @@ t_spec      *initSpec(char *pathToCub)
         free(line);
     }
     if(!(specs = map_builder(specs, line, fd)))
-        return (free_line(line)); //need to free the whole struc in case of error
+        return (free_all_spec(specs)); //need to free the whole struc in case of error
 	if (!(specs->map = delete_space(specs->map)))
 		return (free_all_spec(specs));
-    specs->sprites = catchSprite(specs);
+    if (!(specs->sprites = catchSprite(specs)))
+        return (free_all_spec(specs));
     return (set_player(specs));
 }
 /*

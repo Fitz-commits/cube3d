@@ -3,6 +3,7 @@
 t_spec		*free_spec(t_spec *specs)
 {
     free(specs);
+    exit(0);
     return (NULL);
 }
 
@@ -34,6 +35,34 @@ t_spec		*free_map(char **map)
 
 }
 
+void        free_sprites(t_sprite *sprites)
+{
+    if (sprites->sprite_x)
+        free(sprites->sprite_x);
+    if (sprites->sprite_y)
+        free(sprites->sprite_y);
+    free(sprites);
+}
+
+t_text	*free_text(t_spec *inf)
+{
+	int i;
+	i = 0;
+    if (inf->text->vtext)
+    {
+	    while (i < 5)
+		    if(inf->text->vtext[i++])
+			    mlx_destroy_image(inf->mlx, inf->text->vtext[i - 1]);
+        free(inf->text->vtext);
+    }
+    if (inf->text->chartext)
+        free(inf->text->chartext);
+    if (inf->text->itext)
+        free(inf->text->itext);
+    free(inf->text);
+	return (inf->text);
+}
+
 t_spec		*free_all_spec(t_spec *specs)
 {
     if (specs->pathNO)
@@ -46,6 +75,12 @@ t_spec		*free_all_spec(t_spec *specs)
         free(specs->pathWE);
     if (specs->pathS)
         free(specs->pathS);
+    if (specs->mlx)
+        mlx_destroy_window(specs->mlx, specs->win_ptr);
+    if (specs->text)
+        free_text(specs->text);
+    if (specs->sprites)
+        free_sprites(specs->sprites);
     if (specs->map)
 		free_map(specs->map);
 	return (free_spec(specs));

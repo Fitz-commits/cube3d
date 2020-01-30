@@ -11,47 +11,39 @@
 /* ************************************************************************** */
 #include <stdio.h>
 #include "cube3d.h"
-t_text	*free_text(t_spec *inf)
-{
-	int i;
-	i = 0;
-	while (i < 5)
-		if(inf->text->vtext[i++])
-			mlx_destroy_image(inf->mlx, inf->text->vtext[i - 1]);
-	return (inf->text);
-}
+
 t_text	*zeroing(t_text *text)
 {
-	int i;
-
-	i = 0;
-	while (i < 5)
-		text->vtext[i++] = NULL;
+	text->chartext = NULL;
+	text->itext = NULL;
+	text->vtext = NULL;
 	return (text);
 }
+
 t_text	*init_void(t_spec *inf)
 {
 	if (!(inf->text = malloc(sizeof(t_text))))
-		return (NULL);
-	if(!(inf->text->vtext = (void**)malloc(sizeof(void*) * 5)))
-		return (NULL);
+		return (free_all_spec(inf));
 	inf->text = zeroing(inf->text);
+	if(!(inf->text->vtext = (void**)malloc(sizeof(void*) * 5)))
+		return (free_all_spec(inf));
 	if (!(inf->text->vtext[0] = mlx_xpm_file_to_image(inf->mlx, inf->pathNO, 
 		&inf->text->twidth[0], &inf->text->theight[0])))
-		return (free_text(inf));
+		return (free_all_spec(inf));
 	if (!(inf->text->vtext[1] = mlx_xpm_file_to_image(inf->mlx, inf->pathEA, 
 		&inf->text->twidth[1], &inf->text->theight[1])))
-			return (free_text(inf));
+		return (free_all_spec(inf));
 	if (!(inf->text->vtext[2] = mlx_xpm_file_to_image(inf->mlx, inf->pathSO, 
 		&inf->text->twidth[2], &inf->text->theight[2])))
-			return (free_text(inf));
+		return (free_all_spec(inf));
 	if (!(inf->text->vtext[3] = mlx_xpm_file_to_image(inf->mlx, inf->pathWE, 
 		&inf->text->twidth[3], &inf->text->theight[3])))
-			return (free_text(inf));
+		return (free_all_spec(inf));
 	if (!(inf->text->vtext[4] = mlx_xpm_file_to_image(inf->mlx, inf->pathS, 
 		&inf->text->twidth[4], &inf->text->theight[4])))
-			return (free_text(inf));
-	inf->text = get_adress(inf->text);
+		return (free_all_spec(inf));
+	if (!(inf->text = get_adress(inf->text)))
+		return (free_all_spec(inf));
 	return (inf->text);
 }
 

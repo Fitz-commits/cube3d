@@ -90,20 +90,11 @@ int			save_bmp(t_spec *inf)
 	pad = (4 - (inf->res_x * 3) % 4) % 4;
 	filesize = 54 + (3 * ((int)inf->res_x + pad) * (int)inf->res_y);
 	if ((file = open("screenshot.bmp", O_WRONLY | O_CREAT | O_TRUNC | O_APPEND)) < 0)
-		{	
-			printf("%s", "ERROOOOOR1");
 			return (0);
-		}
 	if (!write_bmp_header(file, filesize, inf))
-		{	
-			printf("%s", "ERROOOOOR2");
 			return (0);
-		}
 	if (!write_bmp_data(file, inf, pad))
-		{	
-			printf("%s", "ERROOOOOR3");
 			return (0);
-		}
 	return (1);
 }
 
