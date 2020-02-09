@@ -1,54 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   free_ft.c                                          :+:      :+:    :+:   */
+/*   ft_error.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: cdelaby <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/02/06 15:46:41 by cdelaby           #+#    #+#             */
-/*   Updated: 2020/02/06 15:46:46 by cdelaby          ###   ########.fr       */
+/*   Created: 2020/02/09 13:25:45 by cdelaby           #+#    #+#             */
+/*   Updated: 2020/02/09 13:25:47 by cdelaby          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cube3d.h"
 
-t_spec		*free_spec(t_spec *specs)
+int			pr_err(char *error)
 {
-	free(specs);
-	exit(0);
-	return (NULL);
+	if (error == NULL)
+		return (0);
+	ft_putstr_fd("Error\nCouldn't ", 1);
+	ft_putstr_fd(error, 1);
+	return (0);
 }
 
-t_text		*free_spect(t_spec *specs)
+t_spec		*pr_err_sp(char *error)
 {
-	free(specs);
-	exit(0);
-	return (NULL);
-}
-
-t_spec		*free_line(char *line)
-{
-	free(line);
-	return (NULL);
-}
-
-char		*free_line_char(char *line)
-{
-	free(line);
-	return (NULL);
-}
-
-t_spec		*free_map(char **map)
-{
-	int i;
-
-	i = 0;
-	while (map[i])
-	{
-		free(map[i]);
-		map[i] = NULL;
-		i++;
-	}
-	free(map);
+	ft_putstr_fd("Error\nCouldn't ", 1);
+	ft_putstr_fd(error, 1);
 	return (NULL);
 }

@@ -11,9 +11,8 @@
 /* ************************************************************************** */
 
 #include "cube3d.h"
-#include <stdio.h>
 
-static void		set_int_in_char(unsigned char *start, int value)
+static void			set_int_in_char(unsigned char *start, int value)
 {
 	start[0] = (unsigned char)(value);
 	start[1] = (unsigned char)(value >> 8);
@@ -21,7 +20,7 @@ static void		set_int_in_char(unsigned char *start, int value)
 	start[3] = (unsigned char)(value >> 24);
 }
 
-static int		write_bmp_header(int fd, int filesize, t_spec *inf)
+static int			write_bmp_header(int fd, int filesize, t_spec *inf)
 {
 	int				i;
 	int				tmp;
@@ -44,22 +43,22 @@ static int		write_bmp_header(int fd, int filesize, t_spec *inf)
 	return (!(write(fd, bmpfileheader, 54) < 0));
 }
 
-static int		get_color(t_spec *inf, int x, int y)
+static int			get_color(t_spec *inf, int x, int y)
 {
 	int		rgb;
 	int		color;
 
-	color = *(int*)(inf->charimgptr 
+	color = *(int*)(inf->charimgptr
 			+ (4 * (int)inf->res_x * ((int)inf->res_y - 1 - y))
 			+ (4 * x));
 	rgb = (color & 0xFF0000) | (color & 0x00FF00) | (color & 0x0000FF);
 	return (rgb);
 }
 
-static int		write_bmp_data(int file, t_spec *inf, int pad)
+static int			write_bmp_data(int file, t_spec *inf, int pad)
 {
 	const unsigned char		zero[3] = {0, 0, 0};
-	int 					i;
+	int						i;
 	int						j;
 	int						color;
 
@@ -70,7 +69,7 @@ static int		write_bmp_data(int file, t_spec *inf, int pad)
 		while (j < (int)inf->res_x)
 		{
 			color = get_color(inf, j, i);
-			if (write(file, &color, 3) < 0)
+			if ((write(file, &color, 3) < 0))
 				return (0);
 			if (pad > 0 && write(file, &zero, pad) < 0)
 				return (0);
@@ -78,10 +77,10 @@ static int		write_bmp_data(int file, t_spec *inf, int pad)
 		}
 		i++;
 	}
-	return (1);	
+	return (1);
 }
 
-int			save_bmp(t_spec *inf)
+int					save_bmp(t_spec *inf)
 {
 	int			filesize;
 	int			file;
@@ -89,12 +88,13 @@ int			save_bmp(t_spec *inf)
 
 	pad = (4 - (inf->res_x * 3) % 4) % 4;
 	filesize = 54 + (3 * ((int)inf->res_x + pad) * (int)inf->res_y);
-	if ((file = open("screenshot.bmp", O_WRONLY | O_CREAT | O_TRUNC | O_APPEND)) < 0)
-			return (0);
+	if ((file = open("screenshot.bmp", O_WRONLY | O_CREAT
+		| O_TRUNC | O_APPEND, 0666)) < 0)
+		return (pr_err("open the screenshot.bmp"));
 	if (!write_bmp_header(file, filesize, inf))
-			return (0);
+		return (pr_err("write in the header"));
 	if (!write_bmp_data(file, inf, pad))
-			return (0);
+		return (pr_err("write image data"));
+	close(file);
 	return (1);
 }
-

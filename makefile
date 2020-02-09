@@ -1,4 +1,5 @@
 LIBFT_ROOT = ./libft
+LIBFT = libft.a
 LIB_GRAPH = -framework OpenGl -framework Appkit -L minilibx_opengl -lmlx
 
 CC = gcc
@@ -9,8 +10,9 @@ LIB = ar rcs
 
 NAME = Cube3D
 
-SRC = math.c 	parsing.c	process_map.c	texHandling.c \
-		free_ft.c main.c	bmp.c
+SRC = bmp.c		dda.c	draw.c	free_ft_bis.c	free_ft.c	ft_error.c \
+	key_handling.c	key_up.c	math.c	parsing.c	process_map.c	\
+	sprite_init.c	sprite_sort.c	tex_handling.c	utils.c main.c
 
 OBJ = $(SRC:.c=.o)
 	INCLUDE = cube3d.h mlx.h
@@ -18,8 +20,8 @@ OBJ = $(SRC:.c=.o)
 all : libft_all $(NAME)
 
 $(NAME) : $(OBJ)
-	cp $(LIBFT_ROOT)/libft.a .
-		$(CC) $(LIB_GRAPH) $(LIBFT_ROOT)/libft.a $(OBJ) -o $(NAME)
+	cp $(LIBFT_ROOT)/$(LIBFT) .
+		$(CC) $(CCFLAGS) $(LIB_GRAPH) $(LIBFT_ROOT)/libft.a $(OBJ) -o $(NAME)
 
 %.o: %.c $(INCLUDE)
 		$(CC) $(CCFLAGS) $(INCFLAGS) -c -o $@ $<
@@ -33,6 +35,6 @@ clean: libft_clean
 		$(RM) $(OBJ)
 
 fclean: libft_fclean clean
-		$(RM) $(NAME)
+		$(RM) $(NAME) $(LIBFT)
 
 re: fclean all

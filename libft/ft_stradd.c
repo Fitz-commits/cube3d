@@ -24,7 +24,7 @@ char			*ft_stradd(char *rest, char *s2)
 	free(rest);
 	copy_cpp = copy;
 	if (!(rest = (char*)malloc(sizeof(char) * (ft_strlen(copy)
-						+ ft_strlen(s2) + 1)) ))
+						+ ft_strlen(s2) + 1))))
 		return (0);
 	rest_cpp = rest;
 	while (*copy)

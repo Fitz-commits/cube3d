@@ -12,7 +12,7 @@
 
 #include "libft.h"
 
-static int				search_buf(char *buf)
+static int			search_buf(char *buf)
 {
 	int i;
 
@@ -26,7 +26,7 @@ static int				search_buf(char *buf)
 	return (-1);
 }
 
-static int				handle_rest(char **line, char *rest)
+static int			handle_rest(char **line, char *rest)
 {
 	int is_rest;
 
@@ -44,7 +44,7 @@ static int				handle_rest(char **line, char *rest)
 	return (is_rest);
 }
 
-static int				post_checks_gnl(int fd, char **line)
+static int			post_checks_gnl(int fd, char **line)
 {
 	static char		rest[OPEN_MAX][BUFFER_SIZE + 1] = {{0}};
 	char			buf[BUFFER_SIZE + 1];
@@ -71,7 +71,7 @@ static int				post_checks_gnl(int fd, char **line)
 	return ((br == -1) ? -1 : 0);
 }
 
-int				get_next_line(int fd, char **line)
+int					get_next_line(int fd, char **line)
 {
 	if (BUFFER_SIZE <= 0)
 		return (-1);
