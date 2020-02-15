@@ -28,7 +28,7 @@ t_spec			*init_cube(t_spec *inf)
 	inf->mlx = mlx_init();
 	inf->win_ptr = mlx_new_window(inf->mlx, inf->res_x, inf->res_y, "cube3d");
 	if (!(inf->text = init_void(inf)))
-		free_all_spect(inf, "couldn't init void textures");
+		free_all_spect(inf, "init void textures");
 	set_img(inf);
 	return (inf);
 }
@@ -42,6 +42,7 @@ t_spec			*init_spec(char *path_to_cub)
 
 	if (!(specs = (t_spec*)malloc(sizeof(t_spec))))
 		return (NULL);
+	specs = zero_spec(specs);
 	if (!(fd = (open(path_to_cub, O_RDONLY))))
 		return (free_spec(specs));
 	while ((ret = get_next_line(fd, &line) == 1) && (line[0] != '1'))

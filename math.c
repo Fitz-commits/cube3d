@@ -32,12 +32,12 @@ void			rotate_left(t_spec *inf)
 	double old_dir_x;
 
 	old_dir_x = inf->dir_x;
-	inf->dir_x = inf->dir_x * cos(-rotSpeed) - inf->dir_y * sin(-rotSpeed);
-	inf->dir_y = old_dir_x * sin(-rotSpeed) + inf->dir_y * cos(-rotSpeed);
+	inf->dir_x = inf->dir_x * cos(-ROTSPEED) - inf->dir_y * sin(-ROTSPEED);
+	inf->dir_y = old_dir_x * sin(-ROTSPEED) + inf->dir_y * cos(-ROTSPEED);
 	old_plane_x = inf->plane_x;
-	inf->plane_x = inf->plane_x * cos(-rotSpeed) -
-		inf->plane_y * sin(-rotSpeed);
-	inf->plane_y = old_plane_x * sin(-rotSpeed) + inf->plane_y * cos(-rotSpeed);
+	inf->plane_x = inf->plane_x * cos(-ROTSPEED) -
+		inf->plane_y * sin(-ROTSPEED);
+	inf->plane_y = old_plane_x * sin(-ROTSPEED) + inf->plane_y * cos(-ROTSPEED);
 	inf->up->key_left = 0;
 }
 
@@ -47,10 +47,10 @@ void			rotate_right(t_spec *inf)
 	double old_dir_x;
 
 	old_dir_x = inf->dir_x;
-	inf->dir_x = inf->dir_x * cos(rotSpeed) - inf->dir_y * sin(rotSpeed);
-	inf->dir_y = old_dir_x * sin(rotSpeed) + inf->dir_y * cos(rotSpeed);
+	inf->dir_x = inf->dir_x * cos(ROTSPEED) - inf->dir_y * sin(ROTSPEED);
+	inf->dir_y = old_dir_x * sin(ROTSPEED) + inf->dir_y * cos(ROTSPEED);
 	old_plane_x = inf->plane_x;
-	inf->plane_x = inf->plane_x * cos(rotSpeed) - inf->plane_y * sin(rotSpeed);
-	inf->plane_y = old_plane_x * sin(rotSpeed) + inf->plane_y * cos(rotSpeed);
+	inf->plane_x = inf->plane_x * cos(ROTSPEED) - inf->plane_y * sin(ROTSPEED);
+	inf->plane_y = old_plane_x * sin(ROTSPEED) + inf->plane_y * cos(ROTSPEED);
 	inf->up->key_right = 0;
 }

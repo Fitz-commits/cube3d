@@ -12,22 +12,21 @@
 
 #include "cube3d.h"
 
-void			draw_inside(t_spec *inf, int draw_start, int draw_end,
-	int tex_num)
+void			draw_inside(t_spec *inf, int draw_s, int draw_e, int tex_num)
 {
 	int y;
 	int tex_y;
 	int color;
 
 	y = 0;
-	while (y <= draw_start)
+	while (y <= draw_s)
 		inf->intimgptr[(y++ * inf->res_x) + inf->x] = inf->color_c;
-	while (y < draw_end)
+	while (y < draw_e)
 	{
-		tex_y = (int)inf->texPos & (inf->text->theight[tex_num] - 1);
-		inf->texPos += inf->step;
+		tex_y = (int)inf->tex_pos & (inf->text->theight[tex_num] - 1);
+		inf->tex_pos += inf->step;
 		color = inf->text->itext[tex_num][inf->text->theight[tex_num] *
-			tex_y + inf->texX];
+			tex_y + inf->tex_x];
 		inf->intimgptr[(y++ * inf->res_x) + inf->x] = color;
 	}
 	while (y < inf->res_y)

@@ -27,16 +27,21 @@ t_text		*init_void(t_spec *inf)
 	inf->text = zeroing(inf->text);
 	if (!(inf->text->vtext = (void**)malloc(sizeof(void*) * 5)))
 		return (free_all_spect(inf, "alloc vtext"));
-	inf->text->vtext[0] = mlx_xpm_file_to_image(inf->mlx, inf->path_ea,
-		&inf->text->twidth[0], &inf->text->theight[0]);
-	inf->text->vtext[1] = mlx_xpm_file_to_image(inf->mlx, inf->path_we,
-		&inf->text->twidth[1], &inf->text->theight[1]);
-	inf->text->vtext[2] = mlx_xpm_file_to_image(inf->mlx, inf->path_so,
-		&inf->text->twidth[2], &inf->text->theight[2]);
-	inf->text->vtext[3] = mlx_xpm_file_to_image(inf->mlx, inf->path_no,
-		&inf->text->twidth[3], &inf->text->theight[3]);
-	inf->text->vtext[4] = mlx_xpm_file_to_image(inf->mlx, inf->path_s,
-		&inf->text->twidth[4], &inf->text->theight[4]);
+	if (!(inf->text->vtext[0] = mlx_xpm_file_to_image(inf->mlx, inf->path_ea,
+		&inf->text->twidth[0], &inf->text->theight[0])))
+		return (free_all_spect(inf, "allocate path_ea"));
+	if (!(inf->text->vtext[1] = mlx_xpm_file_to_image(inf->mlx, inf->path_we,
+		&inf->text->twidth[1], &inf->text->theight[1])))
+		return (free_all_spect(inf, "alloc path_we"));
+	if (!(inf->text->vtext[2] = mlx_xpm_file_to_image(inf->mlx, inf->path_no,
+		&inf->text->twidth[2], &inf->text->theight[2])))
+		return (free_all_spect(inf, "alloc path_no"));
+	if (!(inf->text->vtext[3] = mlx_xpm_file_to_image(inf->mlx, inf->path_so,
+		&inf->text->twidth[3], &inf->text->theight[3])))
+		return (free_all_spect(inf, "alloc path_so"));
+	if (!(inf->text->vtext[4] = mlx_xpm_file_to_image(inf->mlx, inf->path_s,
+		&inf->text->twidth[4], &inf->text->theight[4])))
+		return (free_all_spect(inf, "alloc path_s"));
 	if (!(inf->text = get_adress(inf->text)))
 		return (free_all_spect(inf, "get address"));
 	return (inf->text);
@@ -44,13 +49,13 @@ t_text		*init_void(t_spec *inf)
 
 void		set_texture(t_spec *inf)
 {
-	inf->texX = (int)(inf->wall_x * (double)(inf->text->twidth[0]));
+	inf->tex_x = (int)(inf->wall_x * (double)(inf->text->twidth[0]));
 	if (inf->side == 0 && inf->ray_dir_x > 0)
-		inf->texX = inf->text->twidth[0] - inf->texX - 1;
+		inf->tex_x = inf->text->twidth[0] - inf->tex_x - 1;
 	if (inf->side == 1 && inf->ray_dir_y < 0)
-		inf->texX = inf->text->twidth[0] - inf->texX - 1;
+		inf->tex_x = inf->text->twidth[0] - inf->tex_x - 1;
 	inf->step = 1.0 * inf->text->theight[0] / inf->line_height;
-	inf->texPos = (inf->draw_start - inf->res_y / 2 +
+	inf->tex_pos = (inf->draw_start - inf->res_y / 2 +
 			inf->line_height / 2) * inf->step;
 }
 

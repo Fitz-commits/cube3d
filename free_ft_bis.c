@@ -23,14 +23,8 @@ void			free_sprites(t_sprite *sprites)
 
 t_text			*free_text(t_spec *inf)
 {
-	int i;
-
-	i = 0;
 	if (inf->text->vtext)
 	{
-		while (i < 5)
-			if (inf->text->vtext[i++])
-				mlx_destroy_image(inf->mlx, inf->text->vtext[i - 1]);
 		free(inf->text->vtext);
 	}
 	if (inf->text->chartext)
@@ -38,7 +32,7 @@ t_text			*free_text(t_spec *inf)
 	if (inf->text->itext)
 		free(inf->text->itext);
 	free(inf->text);
-	return (inf->text);
+	return (NULL);
 }
 
 t_spec			*free_all_spec(t_spec *specs, char *error)
@@ -53,12 +47,12 @@ t_spec			*free_all_spec(t_spec *specs, char *error)
 		free(specs->path_we);
 	if (specs->path_s)
 		free(specs->path_s);
-	if (specs->mlx)
-		mlx_destroy_window(specs->mlx, specs->win_ptr);
 	if (specs->text)
 		free_text(specs);
 	if (specs->sprites)
 		free_sprites(specs->sprites);
+	if (specs->mlx)
+		mlx_destroy_window(specs->mlx, specs->win_ptr);
 	if (specs->map)
 		free_map(specs->map);
 	pr_err(error);
@@ -77,12 +71,12 @@ t_text			*free_all_spect(t_spec *specs, char *error)
 		free(specs->path_we);
 	if (specs->path_s)
 		free(specs->path_s);
-	if (specs->mlx)
-		mlx_destroy_window(specs->mlx, specs->win_ptr);
 	if (specs->text)
 		free_text(specs);
 	if (specs->sprites)
 		free_sprites(specs->sprites);
+	if (specs->mlx)
+		mlx_destroy_window(specs->mlx, specs->win_ptr);
 	if (specs->map)
 		free_map(specs->map);
 	pr_err(error);

@@ -1,3 +1,15 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: cdelaby <marvin@42.fr>                     +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2020/02/15 15:38:01 by cdelaby           #+#    #+#              #
+#    Updated: 2020/02/15 15:38:03 by cdelaby          ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
 LIBFT_ROOT = ./libft
 LIBFT = libft.a
 LIB_GRAPH = -framework OpenGl -framework Appkit -L minilibx_opengl -lmlx
@@ -8,7 +20,7 @@ INCLAGS = -I$(LIBFT_ROOT) $(LIB_GRAPH)
 RM = rm -f
 LIB = ar rcs
 
-NAME = Cube3D
+NAME = cube3D
 
 SRC = bmp.c		dda.c	draw.c	free_ft_bis.c	free_ft.c	ft_error.c \
 	key_handling.c	key_up.c	math.c	parsing.c	process_map.c	\
@@ -23,7 +35,7 @@ $(NAME) : $(OBJ)
 	cp $(LIBFT_ROOT)/$(LIBFT) .
 		$(CC) $(CCFLAGS) $(LIB_GRAPH) $(LIBFT_ROOT)/libft.a $(OBJ) -o $(NAME)
 
-%.o: %.c $(INCLUDE)
+%.o: %.c
 		$(CC) $(CCFLAGS) $(INCFLAGS) -c -o $@ $<
 libft_all:
 		$(MAKE) -C $(LIBFT_ROOT) all

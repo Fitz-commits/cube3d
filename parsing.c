@@ -45,14 +45,14 @@ char			**delete_space(char **map, int i)
 		space = 0;
 		j = 0;
 		while (map[i][j])
-			if (map[i][j++] == ' ')
+			if (map[i][j++] == ' ' || map[i][j++] == '\t')
 				space += 1;
 		if (!(temp = (char*)malloc(ft_strlen(map[i]) - space + 1)))
 			return (NULL);
 		tempcp = temp;
 		j = 0;
 		while (map[i][j++])
-			if (map[i][j - 1] != ' ')
+			if (map[i][j - 1] != ' ' || map[i][j++] != '\t')
 				*tempcp++ = map[i][j - 1];
 		*tempcp = '\0';
 		free(map[i]);
@@ -80,7 +80,7 @@ t_spec			*spec_hand_bis(t_spec *specs, char **spl_l)
 			temp_x = 480;
 		if (temp_y > 1080)
 			temp_y = 1080;
-		if (temp_x < 360)
+		if (temp_y < 360)
 			temp_y = 360;
 		specs->res_x = temp_x;
 		specs->res_y = temp_y;
