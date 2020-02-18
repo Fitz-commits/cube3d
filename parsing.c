@@ -45,14 +45,14 @@ char			**delete_space(char **map, int i)
 		space = 0;
 		j = 0;
 		while (map[i][j])
-			if (map[i][j++] == ' ' || map[i][j++] == '\t')
+			if (is_space(map[i][j++]))
 				space += 1;
 		if (!(temp = (char*)malloc(ft_strlen(map[i]) - space + 1)))
 			return (NULL);
 		tempcp = temp;
 		j = 0;
 		while (map[i][j++])
-			if (map[i][j - 1] != ' ' || map[i][j++] != '\t')
+			if (!is_space(map[i][j - 1]))
 				*tempcp++ = map[i][j - 1];
 		*tempcp = '\0';
 		free(map[i]);
@@ -101,6 +101,8 @@ t_spec			*map_builder(t_spec *specs, char *line, int fd)
 			return (free_line(line));
 		free(line);
 	}
+	if (!(buffer = ft_strnaddmod(buffer, line)))
+		return (free_line(line));
 	free(line);
 	if (!(specs->map = ft_split(buffer, '\n')))
 		return (free_line(buffer));

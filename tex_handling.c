@@ -12,6 +12,23 @@
 
 #include "cube3d.h"
 
+t_spec		*check_data(t_spec *inf)
+{
+	if (!(inf->map))
+		return (free_all_spec(inf, "find the map"));
+	if (!(inf->path_no))
+		return (free_all_spec(inf, "find the path_no"));
+	if (!(inf->path_so))
+		return (free_all_spec(inf, "find the path_so"));
+	if (!(inf->path_s))
+		return (free_all_spec(inf, "find the path_s"));
+	if (!(inf->path_ea))
+		return (free_all_spec(inf, "find the path_ea"));
+	if (!(inf->path_we))
+		return (free_all_spec(inf, "find the path_we"));
+	return (NULL);
+}
+
 t_text		*zeroing(t_text *text)
 {
 	text->chartext = NULL;

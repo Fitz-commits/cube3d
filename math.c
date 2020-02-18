@@ -54,3 +54,10 @@ void			rotate_right(t_spec *inf)
 	inf->plane_y = old_plane_x * sin(ROTSPEED) + inf->plane_y * cos(ROTSPEED);
 	inf->up->key_right = 0;
 }
+
+int				is_space(char c)
+{
+	if (c == '\t' || c == '\r' || c == '\v' || c == '\f' || c == ' ')
+		return (1);
+	return (0);
+}

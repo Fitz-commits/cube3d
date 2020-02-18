@@ -68,13 +68,11 @@ t_spec			*get_letter(t_spec *inf)
 		}
 		j++;
 	}
-	return (NULL);
+	return (free_all_spec(inf, "find orientation specifier"));
 }
 
 t_spec			*zero_spec(t_spec *specs)
 {
-	if (!(specs = (t_spec*)malloc(sizeof(t_spec))))
-		return (NULL);
 	specs->path_no = NULL;
 	specs->path_so = NULL;
 	specs->path_ea = NULL;
@@ -89,6 +87,7 @@ t_spec			*zero_spec(t_spec *specs)
 	specs->text = NULL;
 	specs->sprites = NULL;
 	specs->save = 0;
+	specs->orien = 0;
 	return (specs);
 }
 

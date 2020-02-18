@@ -43,8 +43,8 @@ t_spec			*init_spec(char *path_to_cub)
 	if (!(specs = (t_spec*)malloc(sizeof(t_spec))))
 		return (NULL);
 	specs = zero_spec(specs);
-	if (!(fd = (open(path_to_cub, O_RDONLY))))
-		return (free_spec(specs));
+	if ((fd = (open(path_to_cub, O_RDONLY))) < 0)
+		return (free_all_spec(specs, "read on that fd"));
 	while ((ret = get_next_line(fd, &line) == 1) && (line[0] != '1'))
 	{
 		if (!(specs = spec_handling(specs, line)))
@@ -53,6 +53,7 @@ t_spec			*init_spec(char *path_to_cub)
 	}
 	if (!(specs = map_builder(specs, line, fd)))
 		return (free_all_spec(specs, "build map"));
+	check_data(specs);
 	if (!(specs->map = delete_space(specs->map, 0)))
 		return (free_all_spec(specs, "delete spaces"));
 	if (!(specs->sprites = catch_sprite(specs, 0)))
@@ -61,12 +62,32 @@ t_spec			*init_spec(char *path_to_cub)
 	return (set_player(specs));
 }
 
+int				dot_cub_check(char *path_to_cub)
+{
+	int len;
+
+	len = ft_strlen(path_to_cub);
+	if (len < 4)
+		return (0);
+	if (path_to_cub[len - 4] != '.')
+		return (0);
+	if (path_to_cub[len - 3] != 'c')
+		return (0);
+	if (path_to_cub[len - 2] != 'u')
+		return (0);
+	if (path_to_cub[len - 1] != 'b')
+		return (0);
+	return (1);
+}
+
 int				main(int ac, char **av)
 {
 	t_spec *inf;
 
 	if (ac == 1 || ac > 3)
 		return (pr_err("load the map"));
+	if (!(dot_cub_check(av[1])))
+		return (pr_erre("not a .cub"));
 	if (!(inf = init_spec(av[1])))
 		exit(0);
 	inf = init_cube(inf);

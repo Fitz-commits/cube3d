@@ -21,6 +21,16 @@ int			pr_err(char *error)
 	return (0);
 }
 
+int			pr_erre(char *error)
+{
+	if (error == NULL)
+		return (0);
+	ft_putstr_fd("Error\n", 1);
+	ft_putstr_fd(error, 1);
+	exit(0);
+	return (0);
+}
+
 t_spec		*pr_err_sp(char *error)
 {
 	ft_putstr_fd("Error\nCouldn't ", 1);

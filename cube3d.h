@@ -23,8 +23,8 @@
 # define K_LEFT 123
 # define K_RIGHT 124
 # define K_ESC 53
-# define MOVESPEED 0.20
-# define ROTSPEED 0.1
+# define MOVESPEED 0.10
+# define ROTSPEED 0.05
 
 typedef	struct	s_text
 {
@@ -190,6 +190,7 @@ t_spec			*init_spec(char *path_to_cub);
 void			rotate_left(t_spec *inf);
 void			rotate_right(t_spec *inf);
 int				ft_ar_to_int(char *color);
+int				is_space(char c);
 /*
 ** parsing.c
 */
@@ -225,6 +226,7 @@ t_text			*zeroing(t_text *text);
 t_text			*init_void(t_spec *inf);
 void			set_texture(t_spec *inf);
 t_text			*get_adress(t_text *text);
+t_spec			*check_data(t_spec *inf);
 /*
 ** utils.c
 */
@@ -233,5 +235,5 @@ t_spec			*set_oxy(t_spec *inf, char o, int y, int x);
 t_spec			*get_letter(t_spec *inf);
 t_spec			*zero_spec(t_spec *specs);
 char			*ft_strnaddmod(char *rest, char *s2);
-
+int				pr_erre(char *error);
 #endif
